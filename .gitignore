@@ -1,0 +1,2 @@
+# exclude any .json config files
+*.json
