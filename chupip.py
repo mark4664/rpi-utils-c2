@@ -99,7 +99,7 @@ if refresh:
     # Establish a connection and send the file
     ftp = FTP(host=remotehost,user=username,passwd=password)
     ftp.cwd("/htdocs/rpis")
-    with open(fpath, 'rb') as f:  
-       ftp.storbinary('STOR '+fname, f)  
+    with open(fpath, 'rb') as f:
+       ftp.storbinary('STOR '+fname, f)
     ftp.quit()
 
