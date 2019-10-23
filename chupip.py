@@ -5,6 +5,12 @@
 # Peter Normington
 # 2019-04-07
 
+###################################################################
+# IMPORTANT: this file, together with the configuration           #
+# file epizyftp.json, should be placed in a directory .ipdisclose #
+# in the user's home directory                                    #
+###################################################################
+
 import datetime
 import subprocess
 import os
