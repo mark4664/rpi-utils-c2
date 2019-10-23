@@ -91,7 +91,7 @@ if refresh:
     f.close()
     # Send the file to the public webserver
     # Get the credentials
-    with open(homedir+'epizyftp.json') as json_credentials_file:
+    with open(homedir+'/.ipdisclose/epizyftp.json') as json_credentials_file:
         credentials = json.load(json_credentials_file)
     remotehost = credentials['FTP']['FTP_SERVER']
     username = credentials['FTP']['FTP_USER']
