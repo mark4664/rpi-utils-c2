@@ -8,7 +8,10 @@
 ###################################################################
 # IMPORTANT: this file, together with the configuration           #
 # file epizyftp.json, should be placed in a directory .ipdisclose #
-# in the user's home directory                                    #
+# in the user's home directory.     The script is intended to     #
+# be invoked by the cron daemon on startup (use @reboot with a    #
+# suitable delay to ensure network connections are in place; for  #
+# example "@reboot sleep 30 && /home/peter/.ipdisclose/chupip.py" #
 ###################################################################
 
 import datetime
@@ -22,11 +25,6 @@ from ftplib import FTP
 readingDateTime = datetime.datetime.now()
 readingDate = str(readingDateTime.strftime("%Y-%m-%d"))
 readingTime = str(readingDateTime.strftime("%H:%M:%S"))
-
-# Array variables for the IP addresses, wired and wireless
-current_ip = ["",""]
-# Array variables for any existing (legacy?) IP addresses: wired, wireless and router
-old_ip = ["","",""]
 
 # Get the home directory (eg "/home/dave")
 userresult = subprocess.run(['/usr/bin/whoami'], stdout=subprocess.PIPE)
@@ -44,6 +42,8 @@ ifcfg = ifcfgresult.stdout.decode('UTF-8')
 outstr=""
 ip_idx = 0
 nextline = 0
+# Array variables for the IP addresses, wired and wireless
+current_ip = ["",""]
 iflines = ifcfg.strip().split("\n")
 for line in ifcfg.splitlines():
     line = line.strip()
@@ -63,7 +63,6 @@ for line in ifcfg.splitlines():
             current_ip[ip_idx] = "none"
             ip_idx+=1
         nextline = 0
-ip_idx = 0
 IPaddresses = outstr.strip()
 
 ## Get the external IP address of this machine (actually, the router's) 
@@ -73,39 +72,26 @@ extIPaddress = extIPaddressresult.stdout.decode('UTF-8').strip()
 # File in which to store the relevant information
 fname = 'ipaddress_'+hostname+'.txt'
 fpath =  homedir+'/.ipdisclose/'+fname
-refresh = True
-# Check that the file exists
-if os.path.isfile(fpath):
-    f=open(fpath,"r")
-    iplines = f.readlines()
-    f.close()
-    old_ip[0] = iplines[3].split()[1]
-    old_ip[1] = iplines[4].split()[1]
-    old_ip[2] = iplines[5]
-    # Check to see if there have been any changes
-    refresh = ((old_ip[0] != current_ip[0]) or (old_ip[1] != current_ip[1]) or (old_ip[2] != extIPaddress))
-# If the file didn't exist, or if there have been changes
-if refresh:
-    # Write it all to the file
-    f=open(fpath,"w")
-    f.write(hostname+"\n")
-    f.write(readingDate+"\n")
-    f.write(readingTime+"\n")
-    f.write(IPaddresses+"\n")
-    f.write(extIPaddress)
-    f.truncate()
-    f.close()
-    # Send the file to the public webserver
-    # Get the credentials
-    with open(homedir+'/.ipdisclose/epizyftp.json') as json_credentials_file:
-        credentials = json.load(json_credentials_file)
-    remotehost = credentials['FTP']['FTP_SERVER']
-    username = credentials['FTP']['FTP_USER']
-    password = credentials['FTP']['FTP_PASSWD']
-    # Establish a connection and send the file
-    ftp = FTP(host=remotehost,user=username,passwd=password)
-    ftp.cwd("/htdocs/rpis")
-    with open(fpath, 'rb') as f:
-       ftp.storbinary('STOR '+fname, f)
-    ftp.quit()
+# Write it all to the file
+f=open(fpath,"w")
+f.write(hostname+"\n")
+f.write(readingDate+"\n")
+f.write(readingTime+"\n")
+f.write(IPaddresses+"\n")
+f.write(extIPaddress)
+f.truncate()
+f.close()
+# Send the file to the public webserver
+# Get the credentials
+with open(homedir+'/.ipdisclose/epizyftp.json') as json_credentials_file:
+    credentials = json.load(json_credentials_file)
+remotehost = credentials['FTP']['FTP_SERVER']
+username = credentials['FTP']['FTP_USER']
+password = credentials['FTP']['FTP_PASSWD']
+# Establish a connection and send the file
+ftp = FTP(host=remotehost,user=username,passwd=password)
+ftp.cwd("/htdocs/rpis")
+with open(fpath, 'rb') as f:
+  ftp.storbinary('STOR '+fname, f)
+ftp.quit()
 
