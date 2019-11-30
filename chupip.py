@@ -66,7 +66,7 @@ for line in ifcfg.splitlines():
 IPaddresses = outstr.strip()
 
 ## Get the external IP address of this machine (actually, the router's) 
-extIPaddressresult = subprocess.run(['/usr/bin/dig','+short','myip.opendns.com','@resolver1.opendns.com'], stdout=subprocess.PIPE)
+extIPaddressresult = subprocess.run(['/usr/bin/dig','+short','myip.opendns.com','@resolver3.opendns.com'], stdout=subprocess.PIPE)
 extIPaddress = extIPaddressresult.stdout.decode('UTF-8').strip()
 
 # File in which to store the relevant information
