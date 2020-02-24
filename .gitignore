@@ -1,2 +1,6 @@
 # exclude any .json config files
 *.json
+# exclude audio files
+*.wav
+*.ogg
+*.mp3
