@@ -11,7 +11,7 @@
 # in the user's home directory.     The script is intended to     #
 # be invoked by the cron daemon on startup (use @reboot with a    #
 # suitable delay to ensure network connections are in place; for  #
-# example "@reboot sleep 30 && /home/peter/.ipdisclose/chupip.py" #
+# example "@reboot sleep 30 && /home/peter/.ipdisclose/chupip.py")#
 ###################################################################
 
 import datetime
