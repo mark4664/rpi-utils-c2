@@ -64,6 +64,9 @@ for line in ifcfg.splitlines():
             ip_idx+=1
         nextline = 0
 IPaddresses = outstr.strip()
+if "wlan0" not in IPaddresses:
+    IPaddresses = IPaddresses + "\nNo WiFi card" 
+
 
 ## Get the external IP address of this machine (actually, the router's) 
 extIPaddressresult = subprocess.run(['/usr/bin/dig','+short','myip.opendns.com','@resolver3.opendns.com'], stdout=subprocess.PIPE)
