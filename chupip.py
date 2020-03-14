@@ -44,15 +44,23 @@ ip_idx = 0
 nextline = 0
 # Array variables for the IP addresses, wired and wireless
 current_ip = ["",""]
+
+# We need to find eth0 and wlan0.  Either one might not be present
+eth0_exists = False
+wlan0_exists = False
 iflines = ifcfg.strip().split("\n")
 for line in ifcfg.splitlines():
     line = line.strip()
     if line.startswith('eth0'):
         outstr+= ("eth0: ")
         nextline = 1
+        eth0_exists = True
     elif line.startswith('wlan0'):
+        if not(eth0_exists):
+            outstr+=("eth0: No Wired connection\n")
         outstr+= ("wlan0: ")
         nextline = 1
+        wlan0_exists = True
     elif nextline == 1:
         if line.startswith("inet"):
             current_ip[ip_idx] = line.split()[1]
