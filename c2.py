@@ -110,7 +110,7 @@ f.truncate()
 f.close()
 # Send the file to the public webserver
 # Get the credentials
-with open(homedir+'/.ipdisclose/testftp.json') as json_credentials_file:
+with open(homedir+'/.ipdisclose/c2ftp.json') as json_credentials_file:
     credentials = json.load(json_credentials_file)
 remotehost = credentials['FTP']['FTP_SERVER']
 username = credentials['FTP']['FTP_USER']
