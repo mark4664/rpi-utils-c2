@@ -4,7 +4,7 @@ import json
 from ftplib import FTP
 
 # Get the credentials
-with open('epizyftp.json') as json_credentials_file:
+with open('c2.json') as json_credentials_file:
     credentials = json.load(json_credentials_file)
 remotehost = credentials['FTP']['FTP_SERVER']
 username = credentials['FTP']['FTP_USER']
