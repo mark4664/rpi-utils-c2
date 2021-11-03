@@ -14,7 +14,7 @@
 # then run the following command to install it: sudo apt-get install dnsutils
 #
 # IMPORTANT: this file, together with the configuration
-# file c2ftp.json, should be placed in a directory .ipdisclose
+# file c2.json, should be placed in a directory .ipdisclose
 # in the user's home directory.
 # To create the .ipdisclose directory use the following command;
 # mkdir .ipdisclose  NOTE the '.' makes this a hidden directory
