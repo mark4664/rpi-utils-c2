@@ -27,7 +27,7 @@
 # The c2.py file must be executable by changing its properties
 # see command chmod
 #
-# The results from c2.py can be seen at https://www.u3a.x10.mx/
+# The results from c2.py can be seen at https://www.u3a.x10.mx/rpis/
 #################################################################################
 
 import datetime
