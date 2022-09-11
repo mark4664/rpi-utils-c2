@@ -2,11 +2,16 @@
 # -*- coding: utf-8 -*-
 
 # Script name: c2.py
-# check and update ip address display
+# check and update ip address display, based on chupip.py
 # Peter Normington
 # 2021-10-30
 #
-# based on chupip.py
+# Mark Bradley
+# 2022-09-11
+# Added logging and try - except loop around the ftp operation.
+# 15 sec timeout added to ftp command.
+#
+# 
 #
 # This script requires the 'dig' command which is part of the
 # dnsutils package. To check if this is installed type dig into
@@ -21,22 +26,28 @@
 #
 # The script is intended to be invoked by the cron daemon on startup
 # use @reboot with a suitable delay to ensure network connections are in place;
-# for example '@reboot sleep 30 && /home/<your user name>/.ipdisclose/chupip.py'
+# for example '@reboot sleep 30 && /home/<your user name>/.ipdisclose/c2.py'
 # use command crontab -e to edit the crontab file.
 #
 # The c2.py file must be executable by changing its properties
 # see command chmod
 #
-# The results from c2.py can be seen at https://www.u3a.x10.mx/rpis/
+# 
 #################################################################################
 
 import datetime
 import subprocess
-import os
 import json
+import logging as lg
 
 from time import *
 from ftplib import FTP
+
+# Logging configuration - log 'info' and above to file c2.log, fresh file for each run
+lg.basicConfig(level=lg.INFO,filename='c2.log',filemode='w',
+               format='%(asctime)s - %(levelname)s - %(message)s')
+
+lg.info('IP data collection started')  # Write to log file.
 
 readingDateTime = datetime.datetime.now()
 readingDate = str(readingDateTime.strftime("%Y-%m-%d"))
@@ -95,6 +106,7 @@ if "wlan0" not in IPaddresses:
 ## Get the external IP address of this machine (actually, the router's) 
 extIPaddressresult = subprocess.run(['/usr/bin/dig','+short','myip.opendns.com','@resolver3.opendns.com'], stdout=subprocess.PIPE)
 extIPaddress = extIPaddressresult.stdout.decode('UTF-8').strip()
+lg.info('IP data collection completed')
 
 # File in which to store the relevant information
 fname = 'ipaddress_'+hostname+'.txt'
@@ -108,21 +120,28 @@ f.write(IPaddresses+"\n")
 f.write(extIPaddress)
 f.truncate()
 f.close()
+lg.info(f'IP data written to file {fpath}')
+
 # Send the file to the public webserver
 # Get the credentials
+# NOTE c2 requires 4 parameters in the json config file
 with open(homedir+'/.ipdisclose/c2.json') as json_credentials_file:
     credentials = json.load(json_credentials_file)
 remotehost = credentials['FTP']['FTP_SERVER']
 username = credentials['FTP']['FTP_USER']
 password = credentials['FTP']['FTP_PASSWD']
-remotedir = credentials['FTP']['FTP_REMOTE_DIR']
+remotedir = credentials['FTP']['FTP_REMOTE_DIR'] # Need to contain "/htdocs/rpis"
+
 # Establish a connection and send the file
-#print('stage 0')
-#print(remotehost,username,password)
-ftp = FTP(host=remotehost,user=username,passwd=password)
-ftp.cwd(remotedir)
-#print('stage 1')
-with open(fpath, 'rb') as f:
-  ftp.storbinary('STOR '+fname, f)
-  #print('stage 2')
-ftp.quit()
+lg.info(f'Start FTP to host:{remotehost}')
+try:
+    ftp = FTP(host=remotehost,user=username,passwd=password,timeout=15)
+    ftp.cwd(remotedir)
+    
+    with open(fpath, 'rb') as f:
+        ftp.storbinary('STOR '+fname, f)
+    ftp.quit()
+    lg.info('FTP completed')
+    
+except:   # In case of error log it.
+    lg.exception('An Error Occured!')
