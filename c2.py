@@ -130,7 +130,7 @@ lg.info(f'IP data written to file {fpath}')
 # Send the file to the public webserver
 # Get the credentials
 # NOTE c2 requires 4 parameters in the json config file
-with open(homedir+'/.ipdisclose/c2.json') as json_credentials_file:
+with open(homedir+'/.ipdisclose/c2M.json') as json_credentials_file:
     credentials = json.load(json_credentials_file)
 remotehost = credentials['FTP']['FTP_SERVER']
 username = credentials['FTP']['FTP_USER']
