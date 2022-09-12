@@ -7,9 +7,11 @@
 # 2021-10-30
 #
 # Mark Bradley
-# 2022-09-11
+# 2022-09-12
 # Added logging and try - except loop around the ftp operation.
 # 15 sec timeout added to ftp command.
+# Added variable 'build' and send it with other data.
+# 
 #
 # 
 # This script requires the 'dig' command which is part of the
@@ -33,6 +35,10 @@
 #
 # 
 #################################################################################
+
+# Filename and build
+# Sent to the website to indentify the program that sent the data.
+build='c2.py 2022-09-12'
 
 import datetime
 import subprocess
@@ -115,7 +121,8 @@ f.write(hostname+"\n")
 f.write(readingDate+"\n")
 f.write(readingTime+"\n")
 f.write(IPaddresses+"\n")
-f.write(extIPaddress)
+f.write(extIPaddress+"\n")
+f.write(build)
 f.truncate()
 f.close()
 lg.info(f'IP data written to file {fpath}')
