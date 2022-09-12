@@ -12,7 +12,6 @@
 # 15 sec timeout added to ftp command.
 #
 # 
-#
 # This script requires the 'dig' command which is part of the
 # dnsutils package. To check if this is installed type dig into
 # the command line.  If the response is '# bash: dig: command not found'
@@ -102,8 +101,7 @@ IPaddresses = outstr.strip()
 if "wlan0" not in IPaddresses:
     IPaddresses = IPaddresses + "\nNo WiFi card" 
 
-
-## Get the external IP address of this machine (actually, the router's) 
+## Get the external IP address of this machine (actually, the IP address of the router) 
 extIPaddressresult = subprocess.run(['/usr/bin/dig','+short','myip.opendns.com','@resolver3.opendns.com'], stdout=subprocess.PIPE)
 extIPaddress = extIPaddressresult.stdout.decode('UTF-8').strip()
 lg.info('IP data collection completed')
@@ -130,7 +128,9 @@ with open(homedir+'/.ipdisclose/c2.json') as json_credentials_file:
 remotehost = credentials['FTP']['FTP_SERVER']
 username = credentials['FTP']['FTP_USER']
 password = credentials['FTP']['FTP_PASSWD']
-remotedir = credentials['FTP']['FTP_REMOTE_DIR'] # Need to contain "/htdocs/rpis"
+# On the public webserver, the files should be placed in the same directory as the
+# script to display their contents ("index.php" in this repository)
+remotedir = credentials['FTP']['FTP_REMOTE_DIR']
 
 # Establish a connection and send the file
 lg.info(f'Start FTP to host:{remotehost}')
@@ -144,4 +144,4 @@ try:
     lg.info('FTP completed')
     
 except:   # In case of error log it.
-    lg.exception('An Error Occured!')
+    lg.exception('An Error Occurred!')
